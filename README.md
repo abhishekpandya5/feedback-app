@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Feedback App (Next.js)
 
-## Getting Started
+A modern, secure feedback messaging app built with Next.js (App Router), NextAuth, MongoDB, TypeScript, and serverless APIs.
 
-First, run the development server:
+## 🚀 Project Overview
+
+This app allows users to sign up, verify their email, and send private feedback messages to other users. It includes:
+
+- Email verification-based authentication
+- Username-based public profile pages
+- Send, view, and delete feedback messages
+- Message suggestions powered from server APIs
+- Clean component-based UI with reusable form controls and toasts
+
+## ⚙️ Features
+
+- **Passwordless sign-up with verification code**
+- **Login with username + passcode**
+- **User dashboard** for received messages
+- **Public user pages** at `/u/[username]`
+- **Real-time validation and toasts** for UX feedback
+- **API routes** organized by feature (`send-message`, `get-messages`, etc.)
+
+## 🧭 Tech Stack
+
+- Next.js App Router
+- TypeScript
+- NextAuth
+- MongoDB (via Mongoose)
+- Zod schema validation
+- Custom UI components + CSS modules
+
+## 📁 Key Files
+
+- `src/app/page.tsx` - Main landing page
+- `src/app/(auth)/sign-up/page.tsx` - Sign-up form flow
+- `src/app/(auth)/verify/[username]/page.tsx` - Email code verification
+- `src/app/api/*/route.ts` - API handlers
+- `src/lib/dbConnect.ts` - Database connection
+- `src/context/AuthProvider.tsx` - Auth context
+
+## 🧪 Run Locally
+
+1. Clone this repo
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Create `.env.local` with:
+
+```env
+MONGODB_URI=your_mongo_connection_string
+NEXTAUTH_SECRET=supersecret
+NEXTAUTH_URL=http://localhost:3000
+EMAIL_SERVER_USER=...
+EMAIL_SERVER_PASSWORD=...
+EMAIL_SERVER_HOST=...
+EMAIL_SERVER_PORT=...
+```
+
+4. Start the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🧭 Usage Flow
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Sign up with username, email, and password.
+2. Check your inbox for verification code.
+3. Verify your account and sign in.
+4. Send feedback to another user by username.
+5. View messages on your dashboard and in your public profile.
 
-## Learn More
+## 🧬 API Endpoints
 
-To learn more about Next.js, take a look at the following resources:
+- `POST /api/sign-up` — create user and send verification email
+- `POST /api/verify-code` — verify code and activate account
+- `POST /api/send-message` — send message to user
+- `GET /api/get-messages` — get logged-in user messages
+- `DELETE /api/delete-message/[messageid]` — delete own message
+- `GET /api/suggest-messages` — message suggestions
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## ✅ Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Deploy on Vercel:
 
-## Deploy on Vercel
+```bash
+npm run build
+npm run start
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Or connect repo directly in Vercel and configure environment variables.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🧩 Customize
+
+- Update UI in `src/components/ui/*`
+- Add new API routes under `src/app/api`
+- Extend user schema in `src/model/User.ts`
+
+## 💡 Project Goals
+
+This app is built as a portfolio-ready example of a full-stack Next.js app with authentication, secure server APIs, and polished user UX.
+
+## 📬 Contributing
+
+1. Fork this repo
+2. Create a feature branch
+3. Open a PR with your changes
