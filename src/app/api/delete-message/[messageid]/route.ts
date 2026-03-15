@@ -7,9 +7,10 @@ import mongoose from "mongoose";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { messageid: string } }
+  { params }: { params: Promise<{ messageid: string }> }
 ) {
-  let messageId = params?.messageid;
+  const resolvedParams = await params;
+  let messageId = resolvedParams?.messageid;
   if (!messageId) {
     const pathname = new URL(request.url).pathname;
     messageId = pathname.split("/").pop() || undefined;
