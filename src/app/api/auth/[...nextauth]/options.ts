@@ -23,15 +23,17 @@ export const authOptions: NextAuthOptions = {
         );
         await dbConnect();
         try {
+          const identifier = credentials?.identifier;
+          if (!identifier) {
+            throw new Error("Email or username is required");
+          }
+
           const user = await UserModel.findOne({
-            $or: [
-              { email: credentials.identifier.email },
-              { username: credentials.identifier.username }
-            ]
+            $or: [{ email: identifier }, { username: identifier }]
           });
 
           if (!user) {
-            throw new Error("No user found with this email");
+            throw new Error("No user found with this email or username");
           }
 
           if (!user.isVerified) {

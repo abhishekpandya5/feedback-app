@@ -2,9 +2,8 @@ import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
 import { getServerSession, User } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/options";
-import mongoose from "mongoose";
 
-export async function GET(request: Request) {
+export async function GET() {
   await dbConnect();
   const session = await getServerSession(authOptions);
   const user: User = session?.user as User;
@@ -19,17 +18,22 @@ export async function GET(request: Request) {
     );
   }
   //   convert userId again to mongodb id object
-  const userId = new mongoose.Types.ObjectId(user._id);
+  const userId = user._id;
+
+  if (!userId) {
+    return Response.json(
+      {
+        success: false,
+        message: "User ID is missing from session"
+      },
+      { status: 401 }
+    );
+  }
 
   try {
-    const user = await UserModel.aggregate([
-      { $match: { id: userId } },
-      { $unwind: "$messages" },
-      { $sort: { "messages.createdAt": -1 } },
-      { $group: { _id: "$_id", messages: { $push: "$messages" } } }
-    ]);
+    const foundUser = await UserModel.findById(userId);
 
-    if (!user || user.length === 0) {
+    if (!foundUser) {
       return Response.json(
         {
           success: false,
@@ -42,7 +46,7 @@ export async function GET(request: Request) {
     return Response.json(
       {
         success: true,
-        messages: user[0].messages
+        messages: foundUser.messages || []
       },
       { status: 200 }
     );

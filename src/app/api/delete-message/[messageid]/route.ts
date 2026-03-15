@@ -3,12 +3,25 @@ import { getServerSession } from "next-auth/next";
 import dbConnect from "@/lib/dbConnect";
 import { User } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/options";
+import mongoose from "mongoose";
 
 export async function DELETE(
   request: Request,
   { params }: { params: { messageid: string } }
 ) {
-  const messageId = params.messageid;
+  let messageId = params?.messageid;
+  if (!messageId) {
+    const pathname = new URL(request.url).pathname;
+    messageId = pathname.split("/").pop() || undefined;
+  }
+
+  if (!messageId) {
+    return Response.json(
+      { success: false, message: "Message ID is required" },
+      { status: 400 }
+    );
+  }
+
   await dbConnect();
   const session = await getServerSession(authOptions);
   const _user: User = session?.user as User;
@@ -20,9 +33,19 @@ export async function DELETE(
   }
 
   try {
+    const userId = new mongoose.Types.ObjectId(_user._id);
+    // if (!mongoose.Types.ObjectId.isValid(messageId)) {
+    //   return Response.json(
+    //     { success: false, message: "Invalid message ID" },
+    //     { status: 400 }
+    //   );
+    // }
+
+    const messageObjectId = new mongoose.Types.ObjectId(messageId);
+
     const updateResult = await UserModel.updateOne(
-      { _id: _user._id },
-      { $pull: { messages: { _id: messageId } } }
+      { _id: userId },
+      { $pull: { messages: { _id: messageObjectId } } }
     );
 
     if (updateResult.modifiedCount === 0) {
